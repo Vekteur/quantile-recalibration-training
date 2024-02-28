@@ -1,0 +1,16 @@
+pytorch_lightning==1.9.2
+pyro-ppl
+dask[complete]
+numba
+omegaconf
+rich
+seaborn
+pandas
+xlrd
+openml==0.13.1
+ngboost
+openpyxl
+jupyterlab
+ipywidgets
+tueplots
+colorcet
