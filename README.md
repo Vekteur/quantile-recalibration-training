@@ -58,6 +58,6 @@ You can cite our paper using:
   title     = {Probabilistic Calibration by Design for Neural Network Regression},
   author    = {Dheur, Victor and Ben taieb, Souhaib},
   booktitle = {The 27th International Conference on Artificial Intelligence and Statistics (AISTATS)},
-  year      = {2043},
+  year      = {2024},
 }
 ```
