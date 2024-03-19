@@ -1,10 +1,12 @@
-Accompanying repository for the paper *Probabilistic Calibration by Design for Neural Network Regression* (AISTATS 2024).
+Accompanying repository for the paper [Probabilistic Calibration by Design for Neural Network Regression](https://arxiv.org/abs/2403.11964) (AISTATS 2024).
 
 ### Overview
 
 This repository includes the implementation of Quantile Recalibration Training, a novel training procedure to learn predictive distributions that are probabilistically calibrated at every training step.
 The full pipeline, including hyperparameter tuning and figures, is provided.
 The implementation is based on the [repository](https://github.com/Vekteur/probabilistic-calibration-study) of the paper *A Large-Scale Study of Probabilistic Calibration in Neural Network Regression*.
+
+The experiments are available in the directory [uq](/uq/). Additionally, a minimum PyTorch Lightning implementation of Quantile Recalibration Training is available in the directory [demo](/demo/). This code can easily be adapted for custom datasets.
 
 <p align="center">
 <img src="images/metric_per_dataset_per_epoch.svg?raw=true" alt="" width="88%" align="top">

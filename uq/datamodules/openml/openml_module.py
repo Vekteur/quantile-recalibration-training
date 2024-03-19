@@ -25,15 +25,4 @@ class OpenMLDataModule(BaseDataModule):
             log.info('Downloading datasets...')
             download_openml_suite(self.suite_id, data_path)
             x, y = load_dataset(path)
-        # Experiments where I use only one feature to allow visualisation
-        if self.rc.config.plot_toy:
-            x = x[:, 2:3]
-            batch_size = 256
-            x, y = x[:batch_size], y[:batch_size]
-            import numpy as np
-
-            idx = np.argsort(y, axis=0)[:-5, 0]
-            x, y = x[idx], y[idx]
-            idx = np.argsort(x, axis=0)[:, 0][batch_size // 2 :]
-            y[idx] = 20 - y[idx]
         return x, y

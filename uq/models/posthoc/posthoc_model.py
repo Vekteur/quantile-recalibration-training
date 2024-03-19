@@ -10,27 +10,6 @@ from ..pred_type.recalibrated_dist import RecalibratedDist
 from .recalibration import build_recalibration_map
 
 
-# def get_posthoc_data(datamodule, posthoc_dataset, posthoc_method, data=None):
-#     def sample(data):
-#         x, y = data[:]
-#         max_size = 2048
-#         if y.shape[0] <= max_size:
-#             return x, y
-#         idx = torch.multinomial(torch.ones(y.shape[0]), max_size, replacement=False)
-#         return x[idx], y[idx]
-
-#     # When posthoc_dataset == 'batch', the post-hoc model is computed on half the batch during training
-#     # but on the calibration dataset during validation and testing
-#     if posthoc_dataset in ['calib', 'batch']:
-#         data = sample(datamodule.data_calib)
-#     elif posthoc_dataset == 'train':
-#         data = sample(datamodule.data_train)
-#     else:
-#         # Else, the dataset is directly given as argument
-#         data = sample(data)
-#     return data
-
-
 def get_posthoc_transformer(base_module, module, dataset, hparams, variant=None):
     method = hparams['method']
     if method is None:

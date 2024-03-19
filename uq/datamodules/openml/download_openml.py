@@ -62,7 +62,6 @@ def preprocess(x, y, categorical_mask):
         raise InvalidDataset('No remaining columns')
     x = pd.get_dummies(x)
     if len(x) < 100:
-        print('Too few rows', flush=True)
         raise InvalidDataset('Too few rows in the dataset')
     # Categorical data could also be converted to one-hot
     x, y = x.to_numpy('float32'), y.to_numpy('float32')
