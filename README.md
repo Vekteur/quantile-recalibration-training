@@ -6,7 +6,7 @@ This repository includes the implementation of Quantile Recalibration Training, 
 The full pipeline, including hyperparameter tuning and figures, is provided.
 The implementation is based on the [repository](https://github.com/Vekteur/probabilistic-calibration-study) of the paper *A Large-Scale Study of Probabilistic Calibration in Neural Network Regression*.
 
-The experiments are available in the directory [uq](/uq/). Additionally, a minimum PyTorch Lightning implementation of Quantile Recalibration Training is available in the directory [demo](/demo/). This code can easily be adapted for custom datasets.
+The experiments are available in the directory [uq](/uq/). Additionally, a minimum PyTorch Lightning implementation of Quantile Recalibration Training, which can be easily adapted for custom datasets, is available in the directory [demo](/demo/).
 
 <p align="center">
 <img src="images/metric_per_dataset_per_epoch.svg?raw=true" alt="" width="88%" align="top">
@@ -46,7 +46,7 @@ python run.py name="per_epoch" nb_workers=1 repeat_tuning=5 \
         tuning_type="QRT_per_epoch"
 ```
 
-Then, the corresponding figures can be created in the notebook `main_figures.ipynb`.
+Then, the corresponding figures can be created in the notebook `create_figures.ipynb`.
 
 ### License
 

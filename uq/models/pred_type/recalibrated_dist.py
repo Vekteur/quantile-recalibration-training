@@ -54,31 +54,31 @@ class RecalibratedDist(TransformedDistribution):
     def log_prob_regul_mc(self, value):
         # When alpha = 1, this function returns the same value as self.log_prob(value).
         # The second term computes the entropy of the PIT using Monte Carlo estimation.
-        base_loss = self.dist.log_prob(value)
+        dist_log_prob = self.dist.log_prob(value)
         pit = self.dist.cdf(value)
-        regul = self.posthoc_model.log_abs_det_jacobian(pit, None)
+        neg_entropy = self.posthoc_model.log_abs_det_jacobian(pit, None)
         # We add minus signs before the metrics to take into account the negation of the NLL
-        self.metrics['inhoc_base_loss'] = -base_loss.mean().detach()
-        self.metrics['inhoc_regul'] = -regul.mean().detach()
-        regul_scaled = self.alpha * regul
-        self.metrics['inhoc_regul_scaled'] = -regul_scaled.mean().detach()
-        return base_loss + regul_scaled
+        self.metrics['inhoc_base_loss'] = -dist_log_prob.mean().detach()
+        self.metrics['inhoc_regul'] = -neg_entropy.mean().detach()
+        neg_entropy_scaled = self.alpha * neg_entropy
+        self.metrics['inhoc_regul_scaled'] = -neg_entropy_scaled.mean().detach()
+        return dist_log_prob + neg_entropy_scaled
 
     def log_prob_regul_ss(self, value):
         # The second term computes the entropy of the PIT using sample-spacing estimation.
-        base_loss = self.dist.log_prob(value)
+        dist_log_prob = self.dist.log_prob(value)
         pit = self.dist.cdf(value)
-        regul = -sample_spacing_entropy_estimation(
+        neg_entropy = -sample_spacing_entropy_estimation(
             pit,
             spacing=self.spacing,
             neural_sort=self.neural_sort,
             s=self.s,
         )
-        self.metrics['inhoc_base_loss'] = -base_loss.mean().detach()
-        self.metrics['inhoc_regul'] = -regul.mean().detach()
-        regul_scaled = self.alpha * regul
-        self.metrics['inhoc_regul_scaled'] = -regul_scaled.mean().detach()
-        return base_loss + regul_scaled
+        self.metrics['inhoc_base_loss'] = -dist_log_prob.mean().detach()
+        self.metrics['inhoc_regul'] = -neg_entropy.mean().detach()
+        neg_entropy_scaled = self.alpha * neg_entropy
+        self.metrics['inhoc_regul_scaled'] = -neg_entropy_scaled.mean().detach()
+        return dist_log_prob + neg_entropy_scaled
 
 
 if __name__ == '__main__':

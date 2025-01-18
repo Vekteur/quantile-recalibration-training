@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import Sequence, Union
 from timeit import default_timer
+from collections import defaultdict
 
 import torch
 from pytorch_lightning import LightningModule
@@ -30,6 +31,7 @@ class BaseModule(LightningModule):
         self.module.build()
         self.started_stages = set() # To keep track of started stages to help with timing stages
         self.start_times = {} # To measure time per stage
+        self.outputs = defaultdict(list) # To store outputs from each stage
         self.stage = 'predict' # To keep track of current stage to help with timing stages
         self.automatic_optimization = False # To measure backprop time
 
@@ -146,15 +148,18 @@ class BaseModule(LightningModule):
         self.scaler = self.trainer.datamodule.scaler_y
         self.on_start('train')
 
-    def training_epoch_end(self, outputs):
-        self.posthoc_manager.collect_per_step(outputs, 'train')
-        # To eval metrics on the calibration set:
-        # self.eval()
-        # batch = self.trainer.datamodule.data_calib[:]
-        # with torch.no_grad():
-        #     output = self.timed_step(batch, 0, 'calib')
-        # self.posthoc_manager.collect_per_step([output], 'calib')
-        # self.train()
+    def on_batch_end(self, outputs, stage):
+        self.outputs[stage].append(outputs)
+    
+    def on_epoch_end(self, stage):
+        self.posthoc_manager.collect_per_step(self.outputs[stage], stage)
+        self.outputs[stage] = []
+    
+    def on_train_batch_end(self, outputs, batch, batch_idx):
+        return self.on_batch_end(outputs, 'train')
+
+    def on_train_epoch_end(self):
+        self.on_epoch_end('train')
 
     def on_train_end(self):
         self.on_end('train')
@@ -162,19 +167,22 @@ class BaseModule(LightningModule):
     
     def on_validation_start(self):
         self.on_start('val')
-
-    def validation_epoch_end(self, outputs):
-        self.posthoc_manager.collect_per_step(outputs, 'val')
     
-    def on_validation_end(self):
-        self.on_end('val')
+    def on_validation_batch_end(self, outputs, batch, batch_idx):
+        return self.on_batch_end(outputs, 'val')
+
+    def on_validation_epoch_end(self):
+        self.on_epoch_end('val')
 
     def on_test_start(self):
         self.scaler = self.trainer.datamodule.scaler_y
         self.on_start('test')
 
-    def test_epoch_end(self, outputs):
-        self.posthoc_manager.collect_per_step(outputs, 'test')
+    def on_test_batch_end(self, outputs, batch, batch_idx):
+        return self.on_batch_end(outputs, 'test')
+
+    def on_test_epoch_end(self):
+        self.on_epoch_end('test')
     
     def on_test_end(self):
         self.on_end('test')

@@ -45,28 +45,6 @@ class SmoothEmpiricalCDF(CumulativeDistributionTransform):
             dist = TruncatedDist(dist, torch.tensor(0.0), torch.tensor(1.0))
         super().__init__(dist, **kwargs)
 
-    def _call(self, x):
-        y = super()._call(x)
-        # self.plot(x, y)
-        return y
-
-    def plot(self, x, y):
-        import matplotlib.pyplot as plt
-        import numpy as np
-
-        from uq.utils.general import print_once, savefig
-
-        print_once('plot', 'Plot enabled during training')
-
-        fig, axis = plt.subplots()
-        x, y = x.detach().numpy(), y.detach().numpy()
-        idx = np.argsort(x)
-        axis.plot(x[idx], y[idx], '-bo')
-        axis.plot([0, 1], [0, 1], color='black', linestyle='--', lw=1)
-        axis.set(xlim=(0, 1), ylim=(0, 1))
-        axis.set(adjustable='box', aspect='equal')
-        savefig(f'tmp/SmoothEmpiricalCDF/{self.epoch}_{self.batch_idx}')
-
 
 PostHocSmoothPitCalibration = SmoothEmpiricalCDF
 

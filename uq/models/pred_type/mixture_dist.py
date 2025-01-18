@@ -43,12 +43,6 @@ class MixtureDist(MixtureSameFamily):
             Tensor: A tensor of shape `[batch_size, n_samples]`
         """
         raise NotImplementedError()
-        # Check this code before using it
-        logits = self.mixture_distribution.logits
-        categ_one_hot_samples = F.gumbel_softmax(logits, tau=tau, hard=True, dim=-1)
-        loc = self.component_distribution.loc[categ_one_hot_samples == 1]
-        scale = self.component_distribution.scale[categ_one_hot_samples == 1]
-        return self.component_dist_class(loc, scale).rsample(sample_shape)
 
 
 class NormalMixtureDist(MixtureDist):
@@ -62,7 +56,6 @@ class NormalMixtureDist(MixtureDist):
 class LogisticMixtureDist(MixtureDist):
     def __init__(self, *args, base_module=None, **kwargs):
         super().__init__(Logistic, *args, **kwargs)
-        # self.plot()
         self.base_module = base_module
 
     def log_sigmoid(x):
@@ -74,21 +67,3 @@ class LogisticMixtureDist(MixtureDist):
         if self.base_module is not None:
             self.base_module.advance_timer('logistic_log_prob_time', time())
         return res
-
-    def plot(self):
-        import matplotlib.pyplot as plt
-        import numpy as np
-
-        from uq.utils.general import print_once, savefig
-
-        print_once('plot', 'Plot enabled during training')
-
-        fig, axis = plt.subplots()
-        x = torch.linspace(0, 1, 100)
-        with torch.no_grad():
-            y = self.cdf(x)
-        axis.plot(x.numpy(), y.numpy(), '-bo')
-        axis.plot([0, 1], [0, 1], color='black', linestyle='--', lw=1)
-        axis.set(xlim=(0, 1), ylim=(0, 1))
-        axis.set(adjustable='box', aspect='equal')
-        savefig(f'tmp/LogisticMixtureDist/{self.model.current_epoch}')

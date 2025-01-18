@@ -2,7 +2,7 @@ import torch
 
 from ..base_module import BaseModule
 
-from uq.metrics.dist_metrics_computer import DistMetricsComputer
+from uq.metrics.dist_metrics_computer import DistMetricsComputer, nll
 from uq.utils.dist import unnormalize_y
 from uq.utils.general import elapsed_timer
 
@@ -19,10 +19,13 @@ class DistModule(BaseModule):
             epoch = self.current_epoch
         posthoc_module.build(epoch, batch_idx, stage, batch=batch)
         dist = posthoc_module.model(dist)
+        # We compute the unnormalized NLL for Figure 1 of the paper
+        unnormalized_nll = nll(dist, y).mean()
         if self.rc.config.unnormalize:
             dist = dist.unnormalize(self.scaler)
             y = unnormalize_y(y, self.scaler)
-        return DistMetricsComputer(self, y, dist).compute(stage)
+        metrics = DistMetricsComputer(self, y, dist).compute(stage)
+        return {'unnormalized_nll': unnormalized_nll, **metrics}
     
     def visualize_computation_graph(self, loss_posthoc):
         import torchviz

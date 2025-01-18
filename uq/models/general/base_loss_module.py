@@ -52,6 +52,7 @@ class BaseLossModule(DecoratorModule):
             loss = torch.full([], 0)
         if self.metric_name is not None:
             self.metrics[self.metric_name] = base_loss.detach()
+            # Collect metrics from RecalibratedDist if available
             if hasattr(pred, 'metrics'):
                 assert isinstance(pred.metrics, dict)
                 self.metrics = {**self.metrics, **pred.metrics}

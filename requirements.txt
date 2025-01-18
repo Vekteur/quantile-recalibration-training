@@ -1,4 +1,4 @@
-pytorch_lightning==1.9.2
+pytorch_lightning>=2
 pyro-ppl
 dask[complete]
 numba
